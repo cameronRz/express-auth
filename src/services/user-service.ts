@@ -11,10 +11,10 @@ function exclude<Key extends keyof User>(user: User, keys: Key[]): Omit<User, Ke
 
 export class UserService {
     async findUserByEmail(email: string) {
-        return await prisma.user.findUnique({
+        return prisma.user.findUnique({
             where: {
                 email,
-            }
+            },
         });
     }
 
