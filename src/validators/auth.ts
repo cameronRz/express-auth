@@ -12,3 +12,8 @@ export const registerRequestValidator = Joi.object({
     passwordConfirmation: Joi.ref('password'),
 })
     .with('password', 'passwordConfirmation');
+
+export const loginRequestValidator = Joi.object({
+    email: Joi.string().email().required(),
+    password: Joi.string().required(),
+});

@@ -10,6 +10,14 @@ function exclude<Key extends keyof User>(user: User, keys: Key[]): Omit<User, Ke
 }
 
 export class UserService {
+    async findUserByEmail(email: string) {
+        return await prisma.user.findUnique({
+            where: {
+                email,
+            }
+        });
+    }
+
     async createUser(data: Omit<User, 'id'>): Promise<Omit<User, 'password'>> {
         try {
             const hashedPassword = await hashPassword(data.password);
