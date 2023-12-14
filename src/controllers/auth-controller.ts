@@ -2,9 +2,9 @@ import { Request, Response } from 'express';
 import { registerRequestValidator, loginRequestValidator } from '../validators/auth';
 import { UserService } from '../services/user-service';
 import { generateToken } from '../utils/jwt';
-import { log } from '../utils/log';
 import { comparePassword } from '../utils/hash';
-import cookie from 'cookie';
+import { serializeCookie, expireCookie } from '../utils/cookie';
+import { log } from '../utils/log';
 
 const userService = new UserService();
 
@@ -26,11 +26,7 @@ export class AuthController {
 
             const token = generateToken({ id: user.id, email: user.email });
 
-            res.setHeader('Set-Cookie', cookie.serialize('token', token, {
-                httpOnly: true,
-                maxAge: 60 * 60 * 24 * 7, // 1 week
-            }));
-
+            res.setHeader('Set-Cookie', serializeCookie('token', token));
             res.json({ token });
         } catch (e: any) {
             log.error(`Error logging in user: ${e.message}`);
@@ -39,9 +35,7 @@ export class AuthController {
     }
 
     logout(req: Request, res: Response) {
-        res.setHeader('Set-Cookie', cookie.serialize('token', '', {
-            expires: new Date(0),
-        }));
+        res.setHeader('Set-Cookie', expireCookie('token'));
         res.json({ message: 'Logged out' });
     }
 
@@ -51,11 +45,7 @@ export class AuthController {
             const user = await userService.createUser({ firstName, lastName, email, password });
             const token = generateToken({ id: user.id, email: user.email });
 
-            res.setHeader('Set-Cookie', cookie.serialize('token', token, {
-                httpOnly: true,
-                maxAge: 60 * 60 * 24 * 7, // 1 week
-            }));
-
+            res.setHeader('Set-Cookie', serializeCookie('token', token));
             res.json({ token });
         } catch (e: any) {
             log.error(`Error registering user: ${e.message}`);
