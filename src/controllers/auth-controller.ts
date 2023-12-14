@@ -4,6 +4,7 @@ import { UserService } from '../services/user-service';
 import { generateToken } from '../utils/jwt';
 import { log } from '../utils/log';
 import { comparePassword } from '../utils/hash';
+import cookie from 'cookie';
 
 const userService = new UserService();
 
@@ -25,11 +26,23 @@ export class AuthController {
 
             const token = generateToken({ id: user.id, email: user.email });
 
+            res.setHeader('Set-Cookie', cookie.serialize('token', token, {
+                httpOnly: true,
+                maxAge: 60 * 60 * 24 * 7, // 1 week
+            }));
+
             res.json({ token });
         } catch (e: any) {
             log.error(`Error logging in user: ${e.message}`);
             res.json({ error: e.message });
         }
+    }
+
+    logout(req: Request, res: Response) {
+        res.setHeader('Set-Cookie', cookie.serialize('token', '', {
+            expires: new Date(0),
+        }));
+        res.json({ message: 'Logged out' });
     }
 
     async register(req: Request, res: Response) {
@@ -38,7 +51,11 @@ export class AuthController {
             const user = await userService.createUser({ firstName, lastName, email, password });
             const token = generateToken({ id: user.id, email: user.email });
 
-            // TODO: Update this response
+            res.setHeader('Set-Cookie', cookie.serialize('token', token, {
+                httpOnly: true,
+                maxAge: 60 * 60 * 24 * 7, // 1 week
+            }));
+
             res.json({ token });
         } catch (e: any) {
             log.error(`Error registering user: ${e.message}`);
