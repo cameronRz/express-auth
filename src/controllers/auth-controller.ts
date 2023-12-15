@@ -1,18 +1,18 @@
 import { Request, Response } from 'express';
 import { registerRequestValidator, loginRequestValidator } from '../validators/auth';
-import { UserService } from '../services/user-service';
+import { UserRepository } from '../repositories/user-repository';
 import { generateToken } from '../utils/jwt';
 import { comparePassword } from '../utils/hash';
 import { serializeCookie, expireCookie } from '../utils/cookie';
 import { log } from '../utils/log';
 
-const userService = new UserService();
+const userRepository = new UserRepository();
 
 export class AuthController {
     async login(req: Request, res: Response) {
         try {
             const { email, password } = await loginRequestValidator.validateAsync(req.body);
-            const user = await userService.findUserByEmail(email);
+            const user = await userRepository.findUserByEmail(email);
 
             if (!user) {
                 return res.json({ error: 'User not found' }).status(400);
@@ -42,7 +42,7 @@ export class AuthController {
     async register(req: Request, res: Response) {
         try {
             const { firstName, lastName, email, password } = await registerRequestValidator.validateAsync(req.body);
-            const user = await userService.createUser({ firstName, lastName, email, password });
+            const user = await userRepository.createUser({ firstName, lastName, email, password });
             const token = generateToken({ id: user.id, email: user.email });
 
             res.setHeader('Set-Cookie', serializeCookie('token', token));

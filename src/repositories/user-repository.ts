@@ -9,7 +9,7 @@ function exclude<Key extends keyof User>(user: User, keys: Key[]): Omit<User, Ke
     return user;
 }
 
-export class UserService {
+export class UserRepository {
     async findUserByEmail(email: string) {
         return prisma.user.findUnique({
             where: {
