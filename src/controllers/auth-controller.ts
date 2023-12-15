@@ -46,7 +46,7 @@ export class AuthController {
             const token = generateToken({ id: user.id, email: user.email });
 
             res.setHeader('Set-Cookie', serializeCookie('token', token));
-            res.json({ token });
+            res.json({ message: 'Registration successful' });
         } catch (e: any) {
             log.error(`Error registering user: ${e.message}`);
             res.json({ error: e.message });

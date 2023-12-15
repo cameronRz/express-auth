@@ -28,3 +28,6 @@ npm run prisma:migrate
 
 Run the project with `npm run dev`.
 
+### Notes
+I left the HTTP JSON response messages generic so they can be updated to fit  any application requirements.
+
