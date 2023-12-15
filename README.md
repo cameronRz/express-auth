@@ -26,3 +26,5 @@ docker compose up -d
 npm run prisma:migrate
 ```
 
+Run the project with `npm run dev`.
+
